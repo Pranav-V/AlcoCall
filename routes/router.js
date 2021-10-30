@@ -3,7 +3,7 @@ const router = express.Router()
 const User = require('../config')
 console.log("here")
 
-router.route("/add").post((req, res) => {
+router.route("/create").post((req, res) => {
     const data = req.body
     User.add({ data })
         .then(() => {

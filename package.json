@@ -9,7 +9,8 @@
     "express": "^4.17.1",
     "firebase": "^9.2.0",
     "firebase-admin": "^10.0.0",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14",
+    "twilio": "^3.70.0"
   },
   "devDependencies": {},
   "scripts": {
