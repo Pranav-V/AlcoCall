@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../config')
-
+const admin = require('firebase-admin')
 const SECURITYHASH = "NE3sF6KCT1YVDupz"
 
 router.route("/createUser").post((req, res) => {
@@ -19,7 +19,23 @@ router.route("/createUser").post((req, res) => {
 });
 
 router.route("/addContact").post((req, res) => {
-    
+    const hash = req.body.hash
+    if (hash != SECURITYHASH) {
+        res.json({success: "false", msg: "Invalid Access"})
+    } else {
+        const name = req.body.name
+        User.where("name", "==", name).get()
+        .then((docs) => {
+            docs.forEach((doc) => {
+                User.doc(doc.id).update({
+                    contacts: admin.firestore.FieldValue.arrayUnion(req.body.contactNumber),
+                    names: admin.firestore.FieldValue.arrayUnion(req.body.contactName)
+                });
+            });
+            res.send({ msg: "Contacts Added" });
+        })
+
+    }
 })
 
 router.route('/')
