@@ -39,25 +39,6 @@ router.route("/addContact").post((req, res) => {
     }
 })
 
-router.route("/addContacts").post((req, res) => {
-    const hash = req.body.hash
-    if (hash != SECURITYHASH) {
-        res.json({success: "false", msg: "Invalid Access"})
-    } else {
-        const name = req.body.name
-        User.where("name", "==", name).get()
-        .then((docs) => {
-            docs.forEach((doc) => {
-                User.doc(doc.id).update({
-                    contacts: admin.firestore.FieldValue.arrayUnion.apply(this, req.body.contactNumber),
-                    names: admin.firestore.FieldValue.arrayUnion.apply(this, req.body.contactName)
-                });
-            });
-            res.send({ msg: "Contacts Added" });
-        })
-    }
-})
-
 
 // router.route("/sendAlert").post((req, res) => {
 //     const hash = req.body.hash
