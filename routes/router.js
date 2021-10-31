@@ -14,7 +14,7 @@ router.route("/createUser").post((req, res) => {
         const number = req.body.number
         User.add({name, number})
         .then(() => {
-            res.send({ msg: "User Added" });
+            res.send({success: true, msg: "User Added" });
         })
     }
 });
@@ -22,7 +22,7 @@ router.route("/createUser").post((req, res) => {
 router.route("/addContact").post((req, res) => {
     const hash = req.body.hash
     if (hash != SECURITYHASH) {
-        res.json({success: "false", msg: "Invalid Access"})
+        res.json({success: false, msg: "Invalid Access"})
     } else {
         const name = req.body.name
         User.where("name", "==", name).get()
@@ -33,7 +33,7 @@ router.route("/addContact").post((req, res) => {
                     names: admin.firestore.FieldValue.arrayUnion(req.body.contactName)
                 });
             });
-            res.send({ msg: "Contacts Added" });
+            res.send({success: true, msg: "Contacts Added" });
         })
     }
 })
