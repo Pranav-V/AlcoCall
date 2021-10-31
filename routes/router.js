@@ -117,7 +117,7 @@ router.route("/sendMessage").post((req, res) => {
             docs.forEach((doc) => {
                 doc.data().contacts.forEach((contact, i) => {
                     console.log(contact)
-                    createMessage(contact, doc.data().names[i], name, "https://alcowatch-map.herokuapp.com/?name=" + name)
+                    createMessage(contact, doc.data().names[i], name, "https://alcowatch-map.herokuapp.com/?name=" + name.replace(/ /g,"_"))
                 })
             });
             res.send({success: "true", msg: "Message Sent" });
