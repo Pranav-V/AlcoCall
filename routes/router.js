@@ -13,9 +13,10 @@ router.route("/createUser").post((req, res) => {
         const name = req.body.name
         const number = req.body.number
         User.add({name, number})
-        .then(() => {
-            res.send({success: true, msg: "User Added" });
-        })
+            .then(() => {
+                res.send({success: true, msg: "User Added" });
+            })
+            .catch(err => res.json(err))
     }
 });
 
@@ -29,8 +30,8 @@ router.route("/addContact").post((req, res) => {
         .then((docs) => {
             docs.forEach((doc) => {
                 User.doc(doc.id).update({
-                    contacts: admin.firestore.FieldValue.arrayUnion(req.body.contactNumber),
-                    names: admin.firestore.FieldValue.arrayUnion(req.body.contactName)
+                    contacts: admin.firestore.FieldValue.arrayUnion(...req.body.contactNumber),
+                    names: admin.firestore.FieldValue.arrayUnion(...req.body.contactName)
                 });
             });
             res.send({success: true, msg: "Contacts Added" });
