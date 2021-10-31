@@ -8,7 +8,7 @@ const createMessage = require('../messageFunctions')
 router.route("/createUser").post((req, res) => {
     const hash = req.body.hash
     if (hash != SECURITYHASH) {
-        res.json({success: "false", msg: "Invalid Access"})
+        res.json({success: "false", msg: "Invalid hash: " + hash})
     } else {
         const name = req.body.name
         const number = req.body.number
