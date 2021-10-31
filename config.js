@@ -5,4 +5,5 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 const User = db.collection("Users");
-module.exports = User;
+const Alarm = db.collection("Alarm")
+module.exports = {User, Alarm};

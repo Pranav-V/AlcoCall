@@ -1,14 +1,26 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../config')
+const {User, Alarm} = require('../config')
 const admin = require('firebase-admin')
 const SECURITYHASH = "NE3sF6KCT1YVDupz"
 const createMessage = require('../messageFunctions')
 
+const interval = setInterval(() => {
+    Alarm.get()
+    .then((docs) => {
+        docs.forEach((doc) => {
+            if (doc.data().startTime + doc.data().amountTime <= Date.now()) {
+                // do function
+                Alarm.doc(doc.id).delete()
+            }
+        });
+    })
+}, 1000)
+
 router.route("/createUser").post((req, res) => {
     const hash = req.body.hash
     if (hash != SECURITYHASH) {
-        res.json({success: "false", msg: "Invalid hash: " + hash})
+        res.json({success: "false", msg: "Invalid Access"})
     } else {
         const name = req.body.name
         const number = req.body.number
@@ -39,15 +51,21 @@ router.route("/addContact").post((req, res) => {
     }
 })
 
-
-// router.route("/sendAlert").post((req, res) => {
-//     const hash = req.body.hash
-//     if (hash != SECURITYHASH) {
-//         res.json({success: "false", msg: "Invalid Access"})
-//     } else {
-
-//     }
-// });
+router.route("/createAlarm").post((req, res) => {
+    const hash = req.body.hash
+    if (hash != SECURITYHASH) {
+        res.json({success: "false", msg: "Invalid Access"})
+    } else {
+        const name = req.body.name
+        const amountTime = req.body.time
+        const startTime = Date.now();
+        Alarm.add({name, amountTime, startTime})
+            .then(() => {
+                res.send({success: true, msg: "Alarm Added" });
+            })
+            .catch(err => res.json(err))
+    }
+})
 
 router.route("/getLocation").post((req, res) => {
     const hash = req.body.hash
@@ -87,5 +105,25 @@ router.route("/updateLocation").post((req, res) => {
         })
     }
 })
+
+router.route("/sendMessage").post((req, res) => {
+    const hash = req.body.hash
+    if (hash != SECURITYHASH) {
+        res.json({success: "false", msg: "Invalid Access"})
+    } else {
+        const name = req.body.name
+        User.where("name", "==", name).get()
+        .then((docs) => {
+            docs.forEach((doc) => {
+                doc.data().contacts.forEach((contact, i) => {
+                    console.log(contact)
+                    createMessage(contact, doc.data().names[i], name, "...")
+                })
+            });
+            res.send({success: "true", msg: "Message Sent" });
+        })
+    }
+})
+
 router.route('/')
 module.exports = router
